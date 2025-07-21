@@ -1,0 +1,70 @@
+{
+  "name": "eno-cursor",
+  "version": "0.1.0",
+  "description": "A Mac app to help elderly and visually impaired users locate their cursor",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc && cp renderer/*.html dist/",
+    "start": "npm run build && electron dist/main.js",
+    "dev": "nodemon",
+    "dist": "npm run build && electron-builder",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:mac:sign": "npm run build && electron-builder --mac && npm run sign-app",
+    "sign-app": "codesign --force --deep --sign - \"release/mac/Eno Cursor.app\" && codesign --force --deep --sign - \"release/mac-arm64/Eno Cursor.app\"",
+    "release": "npm run build && electron-builder --publish=always"
+  },
+  "keywords": [
+    "accessibility",
+    "cursor",
+    "mac",
+    "elderly",
+    "visual-aid"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.2.0",
+    "electron": "^25.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.0.0",
+    "wait-on": "^8.0.3"
+  },
+  "dependencies": {},
+  "build": {
+    "appId": "com.eno-cursor.app",
+    "productName": "Eno Cursor",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "renderer/**/*",
+      "!dist/*.dmg",
+      "!dist/*.zip",
+      "!dist/mac*/**",
+      "!dist/*.blockmap"
+    ],
+    "mac": {
+      "icon": "assets/icon.png",
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "identity": null,
+      "type": "distribution",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64"]
+        }
+      ]
+    }
+  }
+}

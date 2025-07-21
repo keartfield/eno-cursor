@@ -1,0 +1,204 @@
+const innerCircle = document.getElementById('innerCircle') as HTMLDivElement;
+const outerCircle = document.getElementById('outerCircle') as HTMLDivElement;
+
+let mouseX = 0;
+let mouseY = 0;
+let innerSize = 650;
+let outerSize = 1000;
+let myDisplayIndex = -1;
+let currentDisplayIndex = -1;
+
+// Listen for display index from main process
+const { ipcRenderer: overlayIpcRenderer } = require('electron');
+
+overlayIpcRenderer.on('set-display-index', (event: any, index: number) => {
+  myDisplayIndex = index;
+  console.log(`Overlay initialized for display ${myDisplayIndex}`);
+});
+
+function updateCursorPosition(x: number, y: number, displayIndex: number = -1) {
+    mouseX = x;
+    mouseY = y;
+    currentDisplayIndex = displayIndex;
+    
+    // Show circles only if cursor is on this display
+    // If myDisplayIndex is not set yet (-1), show circles (fallback)
+    const shouldShow = (myDisplayIndex === -1) || (displayIndex === -1) || (displayIndex === myDisplayIndex);
+    
+    console.log(`Display ${myDisplayIndex}: cursor at display ${displayIndex}, shouldShow: ${shouldShow}`);
+    
+    if (shouldShow) {
+        // If myDisplayIndex is not set yet, use fallback positioning
+        if (myDisplayIndex === -1) {
+            // Direct positioning for initial display
+            positionCircles(x, y);
+        } else {
+            // Get display bounds from main process via IPC
+            overlayIpcRenderer.invoke('get-display-bounds', myDisplayIndex).then((bounds: any) => {
+                if (bounds) {
+                    // Convert global coordinates to local coordinates for this display
+                    const localX = x - bounds.x;
+                    const localY = y - bounds.y;
+                    
+                    positionCircles(localX, localY);
+                }
+            }).catch(() => {
+                // Fallback to direct positioning if IPC fails
+                positionCircles(x, y);
+            });
+        }
+    } else {
+        // Hide circles
+        innerCircle.style.display = 'none';
+        outerCircle.style.display = 'none';
+    }
+}
+
+function positionCircles(x: number, y: number) {
+    // Size-dependent compensation calculation (from refactored position service)
+    const outerSizeRatio = Math.min(outerSize / 600, 1);
+    const outerOffsetX = 5 * (1 - outerSizeRatio);
+    const outerOffsetY = -(30 - 5 * (1 - outerSizeRatio));
+    
+    const innerSizeRatio = Math.min(innerSize / 400, 1);
+    const innerOffsetX = 3 * (1 - innerSizeRatio);
+    const innerOffsetY = -(30 - 3 * (1 - innerSizeRatio));
+    
+    // Calculate positions with compensation
+    const innerLeft = x - innerSize / 2 + innerOffsetX;
+    const innerTop = y - innerSize / 2 + innerOffsetY;
+    const outerLeft = x - outerSize / 2 + outerOffsetX;
+    const outerTop = y - outerSize / 2 + outerOffsetY;
+    
+    // Apply positioning
+    innerCircle.style.left = `${innerLeft}px`;
+    innerCircle.style.top = `${innerTop}px`;
+    outerCircle.style.left = `${outerLeft}px`;
+    outerCircle.style.top = `${outerTop}px`;
+    
+    // Set sizes
+    innerCircle.style.width = `${innerSize}px`;
+    innerCircle.style.height = `${innerSize}px`;
+    outerCircle.style.width = `${outerSize}px`;
+    outerCircle.style.height = `${outerSize}px`;
+    
+    // Debug logging
+    const calculatedInnerCenterX = innerLeft + innerSize / 2;
+    const calculatedInnerCenterY = innerTop + innerSize / 2;
+    const calculatedOuterCenterX = outerLeft + outerSize / 2;
+    const calculatedOuterCenterY = outerTop + outerSize / 2;
+    
+    const innerCenterOffsetX = calculatedInnerCenterX - x;
+    const innerCenterOffsetY = calculatedInnerCenterY - y;
+    const outerCenterOffsetX = calculatedOuterCenterX - x;
+    const outerCenterOffsetY = calculatedOuterCenterY - y;
+    
+    console.log(`🎯 CURSOR: (${x}, ${y}) | SIZES: inner=${innerSize}, outer=${outerSize}`);
+    console.log(`🔴 INNER OFFSET: x=${innerCenterOffsetX.toFixed(1)}, y=${innerCenterOffsetY.toFixed(1)} (should be 0,0)`);
+    console.log(`🔵 OUTER OFFSET: x=${outerCenterOffsetX.toFixed(1)}, y=${outerCenterOffsetY.toFixed(1)} (should be 0,0)`);
+    console.log(`---`);
+    
+    // Show circles
+    innerCircle.style.display = 'block';
+    outerCircle.style.display = 'block';
+}
+
+function updateCircleSizes() {
+    console.log('=== updateCircleSizes called ===');
+    console.log('Setting inner circle size to:', innerSize);
+    console.log('Setting outer circle size to:', outerSize);
+    
+    // Update position with new sizes to keep centered on cursor
+    // Use the current mouse position from global tracking
+    if (myDisplayIndex === -1) {
+        // Direct positioning for initial display
+        positionCircles(mouseX, mouseY);
+    } else {
+        // Get display bounds and position for multi-display setup
+        overlayIpcRenderer.invoke('get-display-bounds', myDisplayIndex).then((bounds: any) => {
+            if (bounds) {
+                const localX = mouseX - bounds.x;
+                const localY = mouseY - bounds.y;
+                positionCircles(localX, localY);
+            }
+        }).catch(() => {
+            positionCircles(mouseX, mouseY);
+        });
+    }
+    
+    console.log('=== updateCircleSizes completed ===');
+}
+
+document.addEventListener('mousemove', (event) => {
+    updateCursorPosition(event.clientX, event.clientY);
+});
+
+function trackGlobalCursor() {
+    function updatePosition() {
+        overlayIpcRenderer.invoke('get-cursor-position').then((point: { x: number; y: number; displayIndex: number }) => {
+            updateCursorPosition(point.x, point.y, point.displayIndex);
+        });
+        requestAnimationFrame(updatePosition);
+    }
+    updatePosition();
+}
+
+trackGlobalCursor();
+
+// Listen for size updates from main process
+overlayIpcRenderer.on('circle-sizes-updated', (event: any, sizes: { inner: number; outer: number }) => {
+    innerSize = sizes.inner;
+    outerSize = sizes.outer;
+    console.log('Circle sizes updated:', sizes);
+    updateCircleSizes();
+});
+
+// Listen for settings updates (including colors) from main process
+overlayIpcRenderer.on('circle-settings-updated', (event: any, settings: { inner: number; outer: number; innerColor: string; outerColor: string }) => {
+    console.log('=== OVERLAY: Received circle-settings-updated ===');
+    console.log('Settings received:', settings);
+    console.log('Previous innerSize:', innerSize);
+    console.log('Previous outerSize:', outerSize);
+    
+    innerSize = settings.inner;
+    outerSize = settings.outer;
+    
+    console.log('New innerSize:', innerSize);
+    console.log('New outerSize:', outerSize);
+    
+    if (settings.innerColor) {
+        updateCircleColor('inner', settings.innerColor);
+        console.log('Updated inner color to:', settings.innerColor);
+    }
+    
+    if (settings.outerColor) {
+        updateCircleColor('outer', settings.outerColor);
+        console.log('Updated outer color to:', settings.outerColor);
+    }
+    
+    console.log('Calling updateCircleSizes()');
+    updateCircleSizes();
+    console.log('=== END OVERLAY UPDATE ===');
+});
+
+function updateCircleColor(type: 'inner' | 'outer', color: string) {
+    const rgba = hexToRgba(color, 0.6);
+    
+    if (type === 'inner') {
+        innerCircle.style.borderColor = rgba;
+    } else if (type === 'outer') {
+        outerCircle.style.borderColor = rgba;
+    }
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+
+// Initialize circles as hidden
+innerCircle.style.display = 'none';
+outerCircle.style.display = 'none';

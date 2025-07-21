@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Eno Cursor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #232233;
+            color: #fff;
+            user-select: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 480px;
+            background: #232233;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #333343;
+            padding: 44px 24px 20px 24px;
+            -webkit-app-region: drag;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 13px;
+            color: #8b8aa0;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .control-group {
+            background: #333343;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(139, 138, 160, 0.1);
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            min-width: 120px;
+        }
+
+
+
+        .control-value {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .number-input {
+            background: #232233;
+            border-radius: 6px;
+            border: none;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 80px;
+            text-align: center;
+            font-family: 'SF Mono', Monaco, monospace;
+            -webkit-app-region: no-drag;
+        }
+
+        .number-input:focus {
+            outline: none;
+        }
+
+        .unit {
+            font-size: 12px;
+            color: #8b8aa0;
+            font-weight: 500;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            -webkit-app-region: no-drag;
+        }
+
+        .color-preview:hover {
+            border-color: #fff;
+        }
+
+        .color-input {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .reset-button {
+            background: #8f89fa;
+            border-radius: 6px;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            -webkit-app-region: no-drag;
+        }
+
+        /* Make all interactive elements non-draggable */
+        button, input, select, textarea {
+            -webkit-app-region: no-drag;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Preferences</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Inner Circle Section -->
+            <div class="section">
+                <div class="section-title">Inner Circle</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Size</div>
+                        <div class="control-value">
+                            <input type="number" id="innerSizeInput" class="number-input" value="650" min="50" max="1000" step="10">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label">Color</div>
+                        <div class="color-picker-wrapper">
+                            <div id="innerColorPreview" class="color-preview" style="background-color: #d0723b;"></div>
+                            <input type="color" id="innerColorInput" class="color-input" value="#d0723b">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outer Circle Section -->
+            <div class="section">
+                <div class="section-title">Outer Circle</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Size</div>
+                        <div class="control-value">
+                            <input type="number" id="outerSizeInput" class="number-input" value="1000" min="100" max="1200" step="10">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label">Color</div>
+                        <div class="color-picker-wrapper">
+                            <div id="outerColorPreview" class="color-preview" style="background-color: #e74b4b;"></div>
+                            <input type="color" id="outerColorInput" class="color-input" value="#e74b4b">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reset Section -->
+            <div class="section">
+                <div class="section-title">Reset</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Default Settings</div>
+                        <div class="control-value">
+                            <button id="resetButton" class="reset-button">Reset to Default</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../dist/settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "watch": ["src/**/*.ts"],
+  "ext": "ts",
+  "ignore": ["dist/**/*", "node_modules/**/*", "release/**/*", "renderer/**/*"],
+  "exec": "npm run build && NODE_ENV=development electron dist/main.js",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 1500,
+  "restartable": "rs",
+  "verbose": true,
+  "legacyWatch": true
+} 
