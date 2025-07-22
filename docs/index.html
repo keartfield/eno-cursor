@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eno Cursor </title>
+    <meta name="description" content="A gentle Mac app that helps you find your cursor with beautiful, customizable circles. Perfect for elderly users and those with visual impairments. Free download.">
+    <meta name="keywords" content="cursor, mac app, accessibility, eno, brian eno, 2024 documentary, custom cursor">
+    <meta name="author" content="Eno Cursor">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Eno Cursor">
+    <meta property="og:description" content="Inspired by Brian Eno's custom cursor from the 2024 documentary">
+    <meta property="og:image" content="https://keartfield.github.io/eno-cursor/docs/images/eno_2024_trailer.jpg">
+        
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <link rel="canonical" href="https://keartfield.github.io/eno-cursor">
+    <link rel="icon" type="image/png" href="https://keartfield.github.io/eno-cursor/docs/images/icon.jpg">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background: #232233;
+        }
+        
+        .container {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 40px 24px 10px;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 4px;
+        }
+        
+        .app-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+        
+        /* Hero */
+        .hero {
+            text-align: left;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(139, 138, 160, 0.1);
+        }
+        
+        .hero-description {
+            color: #8b8aa0;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .screenshot {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .screenshot-credit {
+            margin-bottom: 32px;
+            font-size: 13px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .screenshot-credit a {
+            color: #8b8aa0;
+            text-decoration: none;
+        }
+
+        .screenshot-credit a:hover {
+            text-decoration: underline;
+        }
+
+        .download {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .download-button {
+            display: inline-block;
+            background: #8f89fa;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+        }
+        
+        .download-button:hover {
+            background: #7d76f7;
+        }
+        
+        .download-info {
+            color: #8b8aa0;
+            font-size: 14px;
+        }
+        
+        .download-info a {
+            color: #8f89fa;
+            text-decoration: none;
+        }
+        
+        .download-info a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Content sections */
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        
+        .section p {
+            color: #8b8aa0;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .section li {
+            color: #8b8aa0;
+            font-size: 16px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .section li:before {
+            content: "•";
+            color: #d0723b;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .requirement-list {
+            background: #333343;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid rgba(139, 138, 160, 0.1);
+        }
+        
+        .requirement-list li {
+            padding-left: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .requirement-list li:before {
+            content: "✓";
+            color: #8f89fa;
+            margin-right: 12px;
+        }
+        
+        /* Installation warning */
+        .installation-warning {
+            background: #333343;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #e74b4b;
+            margin: 32px 0;
+        }
+        
+        .installation-warning h3 {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .installation-warning p {
+            color: #8b8aa0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(139, 138, 160, 0.1);
+            padding-top: 20px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: #8f89fa;
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 14px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer-text {
+            color: #8b8aa0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+            
+            .app-icon {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .app-title {
+                font-size: 24px;
+            }
+            
+            .hero-description {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <img src="./images/icon.png" alt="Eno Cursor" class="app-icon">
+            <h1 class="app-title">Eno Cursor</h1>
+        </header>
+
+        <!-- Hero -->
+        <section class="hero">
+            <img src="images/eno_2024_trailer.jpg" alt="Eno (2024) Trailer" class="screenshot">
+              
+            <p class="screenshot-credit">
+              via: <a target="_blank" href="https://www.youtube.com/watch?v=dAO1sXCUvDM">ENO (2024) Trailer</a>
+            </p>
+
+            <p class="hero-description">
+              Inspired by Brian Eno's custom cursor from the 2024 documentary 'Eno' by Gary Hustwit
+              <br>
+              <br>
+              A gentle Mac app that helps you find your cursor with beautiful, customizable circles. 
+              Perfect for elderly users and those with visual impairments.
+
+            </p>
+
+
+            <div class="download">
+              <a href="https://github.com/keartfield/eno-cursor/releases/latest/download/Eno.Cursor-0.1.0.dmg" class="download-button">
+                  Download for Mac
+              </a>
+              
+              <div class="download-info">
+                  v0.1.0 • 86.7 MB • <a href="https://github.com/keartfield/eno-cursor/releases">All releases</a>
+              </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+          <img src="images/screenshot.png" alt="Eno Cursor" class="screenshot">
+
+            <h2>Features</h2>
+            <ul>
+                <li>Dual-circle design that follows your cursor</li>
+                <li>Customizable colors for both circles</li>
+                <li>Adjustable sizes (100px to 2000px)</li>
+                <li>Runs quietly in your menu bar</li>
+                <li>Multi-display support</li>
+            </ul>
+        </section>
+
+        <!-- Installation -->
+        <section class="section">
+            <h2>Installation</h2>
+            <p>
+                Download the DMG file, open it, and drag the app to your Applications folder. 
+                Launch from Applications or Spotlight.
+            </p>
+            
+            <div class="installation-warning">
+                <h3>Security Warning</h3>
+                <p>
+                    If macOS shows "cannot verify developer", go to <strong>System Settings → Privacy & Security</strong> 
+                    and click <strong>"Open Anyway"</strong>. This app is safe but not signed with an expensive Apple certificate.
+                </p>
+            </div>
+        </section>
+
+        <!-- System Requirements -->
+        <section class="section">
+            <h2>System Requirements</h2>
+            <div class="requirement-list">
+                <ul>
+                    <li>macOS 10.14 or later</li>
+                    <li>Intel or Apple Silicon Mac</li>
+                    <li>4 GB RAM minimum</li>
+                    <li>100 MB available storage</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Usage -->
+        <section class="section">
+            <h2>How to Use</h2>
+            <p>
+                After installation, look for the ◎ icon in your menu bar. Click it to start/stop the cursor overlay. 
+                Access settings to customize colors and sizes to your preference.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="https://github.com/keartfield/eno-cursor">GitHub</a>
+                <a href="https://github.com/keartfield/eno-cursor/issues">Support</a>
+                <a href="https://ko-fi.com/keartfield">Donate</a>
+            </div>
+            <p class="footer-text">
+                Open source software released under MIT License
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
