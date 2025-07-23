@@ -8,8 +8,6 @@
     "start": "npm run build && electron dist/main.js",
     "dev": "nodemon",
     "dist": "npm run build && electron-builder",
-    "dist:mac": "npm run build && electron-builder --mac",
-    "dist:mac:sign": "npm run build && electron-builder --mac && npm run sign-app",
     "sign-app": "codesign --force --deep --sign - \"release/mac/Eno Cursor.app\" && codesign --force --deep --sign - \"release/mac-arm64/Eno Cursor.app\"",
     "release": "npm run build && electron-builder --publish=always"
   },
@@ -58,11 +56,11 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64"]
+          "arch": ["universal"]
         },
         {
           "target": "zip",
-          "arch": ["x64"]
+          "arch": ["universal"]
         }
       ]
     }
