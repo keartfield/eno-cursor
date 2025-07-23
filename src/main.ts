@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-let mainWindow: BrowserWindow;
+// Removed mainWindow - this is a menu bar app only
 let overlayWindows: BrowserWindow[] = [];
 let tray: Tray | null = null;
 let isRunning = false;
@@ -41,6 +41,7 @@ let innerSize = DEFAULT_INNER_SIZE;
 let outerSize = DEFAULT_OUTER_SIZE;
 let innerColor = DEFAULT_INNER_COLOR;
 let outerColor = DEFAULT_OUTER_COLOR;
+let autoStart = false;
 let settingsWindow: BrowserWindow | null = null;
 
 const settingsPath = path.join(app.getPath('userData'), 'eno-cursor-settings.json');
@@ -49,6 +50,7 @@ interface Settings {
   inner: { size: number; color: string };
   outer: { size: number; color: string };
   running: boolean;
+  autoStart: boolean;
 }
 
 function loadSettings(): void {
@@ -61,6 +63,7 @@ function loadSettings(): void {
       outerSize = settings.outer.size;
       innerColor = settings.inner.color;
       outerColor = settings.outer.color;
+      autoStart = settings.autoStart || false;
       // Always start with isRunning = false on app startup
       isRunning = false;
       
@@ -76,7 +79,8 @@ function saveSettings(): void {
     const settings: Settings = {
       inner: { size: innerSize, color: innerColor },
       outer: { size: outerSize, color: outerColor },
-      running: isRunning
+      running: isRunning,
+      autoStart: autoStart
     };
     
     fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
@@ -84,6 +88,43 @@ function saveSettings(): void {
   } catch (error) {
     console.error('Failed to save settings:', error);
   }
+}
+
+function setAutoStart(enabled: boolean): void {
+  autoStart = enabled;
+  
+  // Set login item for macOS
+  if (process.platform === 'darwin') {
+    if (app.isPackaged) {
+      // For packaged app, use the app bundle path
+      let appPath = app.getPath('exe');
+      
+      // Navigate to the .app bundle from the executable
+      // From: /Applications/Eno Cursor.app/Contents/MacOS/Eno Cursor
+      // To: /Applications/Eno Cursor.app
+      const appBundle = path.dirname(path.dirname(path.dirname(appPath)));
+      
+      console.log('Setting auto-start for packaged app:', appBundle);
+      
+      app.setLoginItemSettings({
+        openAtLogin: enabled,
+        openAsHidden: true,
+        path: appBundle
+      });
+    } else {
+      // Development mode - warn user
+      console.warn('Auto-start in development mode may not work correctly');
+      console.log('Please test with the packaged app');
+      
+      app.setLoginItemSettings({
+        openAtLogin: enabled,
+        openAsHidden: true
+      });
+    }
+  }
+  
+  saveSettings();
+  console.log(`Auto start ${enabled ? 'enabled' : 'disabled'}`);
 }
 
 function createTray(): void {
@@ -362,8 +403,34 @@ function createOverlayWindows(): void {
 
 app.whenReady().then(() => {
   loadSettings();
+  
+  // Check if this is an auto-start launch
+  const isAutoStart = process.argv.includes('--autostart');
+  console.log('App launched:', isAutoStart ? 'via auto-start' : 'manually');
+  
+  // Apply auto-start setting on startup
+  if (process.platform === 'darwin') {
+    const loginItemSettings = app.getLoginItemSettings();
+    if (loginItemSettings.openAtLogin !== autoStart) {
+      setAutoStart(autoStart);
+    }
+  }
+  
   createTray();
   createOverlayWindows();
+  
+  // Auto-start the overlay when app launches
+  setTimeout(() => {
+    if (!isRunning) {
+      toggleOverlay(); // Start the overlay automatically
+      console.log('Auto-started cursor overlay on launch');
+    }
+  }, 1000); // Wait 1 second for everything to initialize
+  
+  // If auto-started, show a brief notification or log
+  if (isAutoStart) {
+    console.log('Eno Cursor started automatically in background');
+  }
 
   app.on('activate', () => {
     // On macOS, don't recreate windows when clicking dock icon
@@ -450,8 +517,18 @@ ipcMain.handle('get-current-settings', () => {
   return {
     inner: { size: innerSize, color: innerColor },
     outer: { size: outerSize, color: outerColor },
-    running: isRunning
+    running: isRunning,
+    autoStart: autoStart
   };
+});
+
+ipcMain.on('set-auto-start', (event, enabled: boolean) => {
+  setAutoStart(enabled);
+  
+  // Update settings window with new auto-start status
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.webContents.send('auto-start-updated', enabled);
+  }
 });
 
 ipcMain.on('update-circle-settings', (event, settings) => {
@@ -501,6 +578,7 @@ ipcMain.on('reset-to-defaults', () => {
   outerSize = DEFAULT_OUTER_SIZE;
   innerColor = DEFAULT_INNER_COLOR;
   outerColor = DEFAULT_OUTER_COLOR;
+  setAutoStart(false); // Reset auto-start to disabled
   
   const defaultSettings = {
     inner: innerSize,
@@ -521,7 +599,8 @@ ipcMain.on('reset-to-defaults', () => {
     settingsWindow.webContents.send('settings-reset', {
       inner: { size: innerSize, color: innerColor },
       outer: { size: outerSize, color: outerColor },
-      running: isRunning
+      running: isRunning,
+      autoStart: autoStart
     });
   }
   

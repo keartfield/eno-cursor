@@ -15,6 +15,7 @@ let configOuterSize = DEFAULT_OUTER_SIZE;
 let configInnerColor = DEFAULT_INNER_COLOR;
 let configOuterColor = DEFAULT_OUTER_COLOR;
 let configIsRunning = false;
+let configAutoStart = false;
 
 // DOM elements might not exist in simplified UI
 const innerSizeInput = document.getElementById('innerSizeInput') as HTMLInputElement;
@@ -24,6 +25,7 @@ const outerColorPreview = document.getElementById('outerColorPreview') as HTMLDi
 const innerColorInput = document.getElementById('innerColorInput') as HTMLInputElement;
 const outerColorInput = document.getElementById('outerColorInput') as HTMLInputElement;
 const resetButton = document.getElementById('resetButton') as HTMLButtonElement;
+const autoStartToggle = document.getElementById('autoStartToggle') as HTMLInputElement;
 
 function updateInnerSize(size: number) {
     configInnerSize = size;
@@ -141,6 +143,12 @@ resetButton.addEventListener('click', () => {
     }
 });
 
+autoStartToggle.addEventListener('change', (e) => {
+    const enabled = (e.target as HTMLInputElement).checked;
+    configAutoStart = enabled;
+    configIpcRenderer.send('set-auto-start', enabled);
+});
+
 document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('preset-button')) {
@@ -170,6 +178,10 @@ configIpcRenderer.invoke('get-current-settings').then((settings: any) => {
             updateOuterColor(settings.outer.color);
         }
     }
+    
+    // Set auto start toggle
+    configAutoStart = settings.autoStart || false;
+    autoStartToggle.checked = configAutoStart;
 });
 
 // Listen for reset events from main process
@@ -181,6 +193,7 @@ configIpcRenderer.on('settings-reset', (event: any, settings: any) => {
     configOuterSize = settings.outer.size;
     configInnerColor = settings.inner.color;
     configOuterColor = settings.outer.color;
+    configAutoStart = settings.autoStart || false;
     
     // Update inputs directly
     innerSizeInput.value = configInnerSize.toString();
@@ -189,6 +202,7 @@ configIpcRenderer.on('settings-reset', (event: any, settings: any) => {
     outerColorInput.value = configOuterColor;
     innerColorPreview.style.backgroundColor = configInnerColor;
     outerColorPreview.style.backgroundColor = configOuterColor;
+    autoStartToggle.checked = configAutoStart;
     
     // Update preset buttons
     updatePresetButtons('inner', configInnerSize);

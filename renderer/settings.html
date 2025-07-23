@@ -21,15 +21,23 @@
 
         .container {
             width: 480px;
+            height: 640px;
             background: #232233;
             border-radius: 12px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             background: #333343;
+            border-bottom: 1px solid rgba(139, 138, 160, 0.1);
             padding: 44px 24px 20px 24px;
             -webkit-app-region: drag;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
         }
 
         .header h1 {
@@ -49,6 +57,8 @@
 
         .content {
             padding: 24px;
+            overflow-y: auto;
+            flex: 1;
         }
 
         .section {
@@ -161,6 +171,64 @@
             -webkit-app-region: no-drag;
         }
 
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            margin-right: 12px;
+            -webkit-app-region: no-drag;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #232233;
+            transition: 0.3s;
+            border-radius: 24px;
+            border: 1px solid rgba(139, 138, 160, 0.3);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #8b8aa0;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #8f89fa;
+            border-color: #8f89fa;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(21px);
+            background-color: #fff;
+        }
+
+        .toggle-description {
+            font-size: 12px;
+            color: #8b8aa0;
+            display: block;
+            margin-top: 4px;
+        }
+
         /* Make all interactive elements non-draggable */
         button, input, select, textarea {
             -webkit-app-region: no-drag;
@@ -217,6 +285,26 @@
                 </div>
             </div>
             
+            <!-- Auto Start Section -->
+            <div class="section">
+                <div class="section-title">Startup</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">
+                          Auto Start
+                          <span class="toggle-description">Launch automatically when you log in</span>
+                        </div>
+                        <div class="control-value">
+
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoStartToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Reset Section -->
             <div class="section">
                 <div class="section-title">Reset</div>
