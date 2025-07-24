@@ -1,10 +1,10 @@
 const { ipcRenderer: configIpcRenderer } = require('electron');
 
-// Default values
-const DEFAULT_INNER_SIZE = 650;
-const DEFAULT_OUTER_SIZE = 1000;
-const DEFAULT_INNER_COLOR = '#d0723b';
-const DEFAULT_OUTER_COLOR = '#e74b4b';
+// Default values - will be injected from main process
+let DEFAULT_INNER_SIZE = 200; // Fallback value
+let DEFAULT_OUTER_SIZE = 1000; // Fallback value
+let DEFAULT_INNER_COLOR = '#d0723b'; // Fallback value
+let DEFAULT_OUTER_COLOR = '#e74b4b'; // Fallback value
 
 // Minimum values (removed - no restrictions)
 // const MIN_INNER_SIZE = 300;
@@ -161,6 +161,16 @@ document.addEventListener('click', (e) => {
             updateOuterSize(value);
         }
     }
+});
+
+// Listen for constants injection from main process
+configIpcRenderer.on('inject-constants', (event: any, constants: { INNER_SIZE: number; OUTER_SIZE: number; INNER_COLOR: string; OUTER_COLOR: string }) => {
+    console.log('Settings constants injected:', constants);
+    DEFAULT_INNER_SIZE = constants.INNER_SIZE;
+    DEFAULT_OUTER_SIZE = constants.OUTER_SIZE;
+    DEFAULT_INNER_COLOR = constants.INNER_COLOR;
+    DEFAULT_OUTER_COLOR = constants.OUTER_COLOR;
+    console.log(`Updated settings constants: innerSize=${DEFAULT_INNER_SIZE}, outerSize=${DEFAULT_OUTER_SIZE}`);
 });
 
 // Initialize values from main process

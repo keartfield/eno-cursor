@@ -1,0 +1,40 @@
+/* Generated from constants.ts - DO NOT EDIT MANUALLY */
+:root {
+  /* Default Values */
+  --default-inner-size: 650px;
+  --default-outer-size: 1000px;
+  --default-inner-color: #d0723b;
+  --default-outer-color: #e74b4b;
+  
+  /* UI Colors */
+  --color-background: #232233;
+  --color-surface: #333343;
+  --color-primary: #8f89fa;
+  --color-text-primary: #fff;
+  --color-text-secondary: #8b8aa0;
+  --color-border: rgba(139, 138, 160, 0.1);
+  
+  /* Circle Settings */
+  --circle-border-width-inner: 16px;
+  --circle-border-width-outer: 60px;
+  --circle-opacity: 0.6;
+  
+  /* Window Settings */
+  --window-settings-width: 480px;
+  --window-settings-height: 640px;
+}
+
+/* Default circle styles using constants */
+.inner-circle {
+  border-width: var(--circle-border-width-inner);
+  border-style: solid;
+  border-color: rgba(208, 114, 59, var(--circle-opacity));
+  box-sizing: border-box;
+}
+
+.outer-circle {
+  border-width: var(--circle-border-width-outer);
+  border-style: solid;
+  border-color: rgba(231, 75, 75, var(--circle-opacity));
+  box-sizing: border-box;
+}

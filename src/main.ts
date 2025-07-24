@@ -2,6 +2,7 @@ import { app, BrowserWindow, screen, ipcMain, Tray, Menu, nativeImage } from 'el
 import * as path from 'path';
 import * as fs from 'fs';
 import { ConfigLoader } from './config-loader';
+import { DEFAULT_VALUES, WINDOW_SETTINGS } from './shared/constants';
 
 // Hot reload for development
 if (process.env.NODE_ENV === 'development') {
@@ -27,24 +28,15 @@ let isRunning = false;
 // Initialize config loader
 const configLoader = ConfigLoader.getInstance();
 
-// Default values
-const DEFAULT_INNER_SIZE = 650;
-const DEFAULT_OUTER_SIZE = 1000;
-const DEFAULT_INNER_COLOR = '#d0723b';
-const DEFAULT_OUTER_COLOR = '#e74b4b';
-
-// Minimum values (removed - no restrictions)
-// const MIN_INNER_SIZE = 300;
-// const MIN_OUTER_SIZE = 500;
-
-let innerSize = DEFAULT_INNER_SIZE;
-let outerSize = DEFAULT_OUTER_SIZE;
-let innerColor = DEFAULT_INNER_COLOR;
-let outerColor = DEFAULT_OUTER_COLOR;
+let innerSize: number = DEFAULT_VALUES.INNER_SIZE;
+let outerSize: number = DEFAULT_VALUES.OUTER_SIZE;  
+let innerColor: string = DEFAULT_VALUES.INNER_COLOR;
+let outerColor: string = DEFAULT_VALUES.OUTER_COLOR;
 let autoStart = false;
 let settingsWindow: BrowserWindow | null = null;
 
 const settingsPath = path.join(app.getPath('userData'), 'eno-cursor-settings.json');
+console.log('Settings path:', settingsPath);
 
 interface Settings {
   inner: { size: number; color: string };
@@ -55,22 +47,28 @@ interface Settings {
 
 function loadSettings(): void {
   try {
-    if (fs.existsSync(settingsPath)) {
-      const data = fs.readFileSync(settingsPath, 'utf8');
-      const settings: Settings = JSON.parse(data);
-      
-      innerSize = settings.inner.size;
-      outerSize = settings.outer.size;
-      innerColor = settings.inner.color;
-      outerColor = settings.outer.color;
-      autoStart = settings.autoStart || false;
-      // Always start with isRunning = false on app startup
-      isRunning = false;
-      
-      console.log('Settings loaded:', settings);
-    }
+    const data = fs.readFileSync(settingsPath, 'utf8');
+    const settings: Settings = JSON.parse(data);
+    
+    innerSize = settings.inner.size;
+    outerSize = settings.outer.size;
+    innerColor = settings.inner.color;
+    outerColor = settings.outer.color;
+    autoStart = settings.autoStart || false;
+    // Always start with isRunning = false on app startup
+    isRunning = false;
+    
+    console.log('Settings loaded from file:', settings);
   } catch (error) {
     console.error('Failed to load settings:', error);
+    // On error, ensure we use constants as fallback
+    innerSize = DEFAULT_VALUES.INNER_SIZE;
+    outerSize = DEFAULT_VALUES.OUTER_SIZE;
+    innerColor = DEFAULT_VALUES.INNER_COLOR;
+    outerColor = DEFAULT_VALUES.OUTER_COLOR;
+    autoStart = false;
+    isRunning = false;
+    console.log('Using constants as fallback due to settings load error');
   }
 }
 
@@ -202,8 +200,8 @@ function createSettingsWindow(): void {
   }
 
   settingsWindow = new BrowserWindow({
-    width: 480,
-    height: 640,
+    width: WINDOW_SETTINGS.SETTINGS_WIDTH,
+    height: WINDOW_SETTINGS.SETTINGS_HEIGHT,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -220,6 +218,16 @@ function createSettingsWindow(): void {
   });
 
   settingsWindow.loadFile(path.join(__dirname, '../renderer/settings.html'));
+  
+  settingsWindow.webContents.once('did-finish-load', () => {
+    // Inject constants from constants file
+    settingsWindow?.webContents.send('inject-constants', {
+      INNER_SIZE: DEFAULT_VALUES.INNER_SIZE,
+      OUTER_SIZE: DEFAULT_VALUES.OUTER_SIZE,
+      INNER_COLOR: DEFAULT_VALUES.INNER_COLOR,
+      OUTER_COLOR: DEFAULT_VALUES.OUTER_COLOR
+    });
+  });
   
   settingsWindow.once('ready-to-show', () => {
     settingsWindow?.show();
@@ -381,6 +389,12 @@ function createOverlayWindows(): void {
     overlayWindow.webContents.once('did-finish-load', () => {
       overlayWindow.webContents.send('set-display-index', index);
       
+      // Inject constants from constants file
+      overlayWindow.webContents.send('inject-constants', {
+        INNER_SIZE: DEFAULT_VALUES.INNER_SIZE,
+        OUTER_SIZE: DEFAULT_VALUES.OUTER_SIZE
+      });
+      
       // Send initial settings to overlay
       const initialSettings = {
         inner: innerSize,
@@ -402,7 +416,21 @@ function createOverlayWindows(): void {
 }
 
 app.whenReady().then(() => {
+  console.log('Initial values from constants:', {
+    INNER_SIZE: DEFAULT_VALUES.INNER_SIZE,
+    INNER_COLOR: DEFAULT_VALUES.INNER_COLOR,
+    OUTER_SIZE: DEFAULT_VALUES.OUTER_SIZE,
+    OUTER_COLOR: DEFAULT_VALUES.OUTER_COLOR
+  });
+  
   loadSettings();
+  
+  console.log('Values after loadSettings:', {
+    innerSize,
+    innerColor,
+    outerSize,
+    outerColor
+  });
   
   // Check if this is an auto-start launch
   const isAutoStart = process.argv.includes('--autostart');
@@ -573,11 +601,30 @@ ipcMain.on('update-circle-settings', (event, settings) => {
 ipcMain.on('reset-to-defaults', () => {
   console.log('Resetting to default settings');
   
+  // Delete the settings file to force loading from constants
+  try {
+    if (fs.existsSync(settingsPath)) {
+      fs.unlinkSync(settingsPath);
+      console.log('Settings file deleted successfully from:', settingsPath);
+      
+      // Verify deletion
+      if (fs.existsSync(settingsPath)) {
+        console.error('WARNING: Settings file still exists after deletion!');
+      } else {
+        console.log('Deletion verified: file no longer exists');
+      }
+    } else {
+      console.log('Settings file does not exist at:', settingsPath);
+    }
+  } catch (error) {
+    console.error('Failed to delete settings file:', error);
+  }
+  
   // Reset to default values
-  innerSize = DEFAULT_INNER_SIZE;
-  outerSize = DEFAULT_OUTER_SIZE;
-  innerColor = DEFAULT_INNER_COLOR;
-  outerColor = DEFAULT_OUTER_COLOR;
+  innerSize = DEFAULT_VALUES.INNER_SIZE;
+  outerSize = DEFAULT_VALUES.OUTER_SIZE;
+  innerColor = DEFAULT_VALUES.INNER_COLOR;
+  outerColor = DEFAULT_VALUES.OUTER_COLOR;
   setAutoStart(false); // Reset auto-start to disabled
   
   const defaultSettings = {
@@ -604,6 +651,20 @@ ipcMain.on('reset-to-defaults', () => {
     });
   }
   
-  saveSettings();
   updateTrayMenu();
+  
+  // Final check: ensure file is still deleted after all operations
+  setTimeout(() => {
+    if (fs.existsSync(settingsPath)) {
+      console.log('Settings file was recreated, deleting again...');
+      try {
+        fs.unlinkSync(settingsPath);
+        console.log('Settings file deleted again successfully');
+      } catch (error) {
+        console.error('Failed to delete settings file on second attempt:', error);
+      }
+    } else {
+      console.log('Settings file remains deleted - success!');
+    }
+  }, 100);
 });

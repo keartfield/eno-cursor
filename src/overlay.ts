@@ -3,8 +3,8 @@ const outerCircle = document.getElementById('outerCircle') as HTMLDivElement;
 
 let mouseX = 0;
 let mouseY = 0;
-let innerSize = 650;
-let outerSize = 1000;
+let innerSize: number; // Will be updated from main process constants injection
+let outerSize: number; // Will be updated from main process constants injection
 let myDisplayIndex = -1;
 let currentDisplayIndex = -1;
 
@@ -14,6 +14,14 @@ const { ipcRenderer: overlayIpcRenderer } = require('electron');
 overlayIpcRenderer.on('set-display-index', (event: any, index: number) => {
   myDisplayIndex = index;
   console.log(`Overlay initialized for display ${myDisplayIndex}`);
+});
+
+// Listen for constants injection from main process
+overlayIpcRenderer.on('inject-constants', (event: any, constants: { INNER_SIZE: number; OUTER_SIZE: number }) => {
+  console.log('Constants injected:', constants);
+  innerSize = constants.INNER_SIZE;
+  outerSize = constants.OUTER_SIZE;
+  console.log(`Updated overlay constants: innerSize=${innerSize}, outerSize=${outerSize}`);
 });
 
 function updateCursorPosition(x: number, y: number, displayIndex: number = -1) {

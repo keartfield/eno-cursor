@@ -1,0 +1,27 @@
+export const DEFAULT_VALUES = {
+  INNER_SIZE: 650,
+  OUTER_SIZE: 1000,
+  INNER_COLOR: '#d0723b',
+  OUTER_COLOR: '#e74b4b'
+};
+
+export const UI_COLORS = {
+  BACKGROUND: '#232233',
+  SURFACE: '#333343',
+  PRIMARY: '#8f89fa',
+  TEXT_PRIMARY: '#fff',
+  TEXT_SECONDARY: '#8b8aa0',
+  BORDER: 'rgba(139, 138, 160, 0.1)'
+};
+
+export const CIRCLE_SETTINGS = {
+  MIN_SIZE: 1,
+  BORDER_WIDTH_INNER: 16,
+  BORDER_WIDTH_OUTER: 60,
+  OPACITY: 0.6
+};
+
+export const WINDOW_SETTINGS = {
+  SETTINGS_WIDTH: 480,
+  SETTINGS_HEIGHT: 640
+};

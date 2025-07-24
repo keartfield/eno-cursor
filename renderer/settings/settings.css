@@ -1,0 +1,227 @@
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-background, #232233);
+    color: var(--color-text-primary, #fff);
+    user-select: none;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.container {
+    width: 480px;
+    height: 640px;
+    background: var(--color-background, #232233);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: var(--color-surface, #333343);
+    border-bottom: 1px solid var(--color-border, rgba(139, 138, 160, 0.1));
+    padding: 44px 24px 20px 24px;
+    -webkit-app-region: drag;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text-primary, #fff);
+    letter-spacing: -0.02em;
+}
+
+.header p {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    color: var(--color-text-secondary, #8b8aa0);
+    font-weight: 400;
+}
+
+.content {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary, #fff);
+    margin: 0 0 16px 0;
+    letter-spacing: -0.01em;
+}
+
+.control-group {
+    background: var(--color-surface, #333343);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--color-border, rgba(139, 138, 160, 0.1));
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.control-row:last-child {
+    margin-bottom: 0;
+}
+
+.control-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary, #fff);
+    min-width: 120px;
+}
+
+.control-value {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.number-input {
+    background: var(--color-background, #232233);
+    border-radius: 6px;
+    border: none;
+    color: var(--color-text-primary, #fff);
+    padding: 8px 12px;
+    font-size: 14px;
+    width: 80px;
+    text-align: center;
+    font-family: 'SF Mono', Monaco, monospace;
+    -webkit-app-region: no-drag;
+}
+
+.number-input:focus {
+    outline: none;
+}
+
+.unit {
+    font-size: 12px;
+    color: var(--color-text-secondary, #8b8aa0);
+    font-weight: 500;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.color-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    -webkit-app-region: no-drag;
+}
+
+.color-preview:hover {
+    border-color: var(--color-text-primary, #fff);
+}
+
+.color-input {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.reset-button {
+    background: var(--color-primary, #8f89fa);
+    border-radius: 6px;
+    color: white;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    -webkit-app-region: no-drag;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    margin-right: 12px;
+    -webkit-app-region: no-drag;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-background, #232233);
+    transition: 0.3s;
+    border-radius: 24px;
+    border: 1px solid var(--color-border, rgba(139, 138, 160, 0.3));
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--color-text-secondary, #8b8aa0);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--color-primary, #8f89fa);
+    border-color: var(--color-primary, #8f89fa);
+}
+
+input:checked + .slider:before {
+    transform: translateX(21px);
+    background-color: var(--color-text-primary, #fff);
+}
+
+.toggle-description {
+    font-size: 12px;
+    color: var(--color-text-secondary, #8b8aa0);
+    display: block;
+    margin-top: 4px;
+}
+
+/* Make all interactive elements non-draggable */
+button, input, select, textarea {
+    -webkit-app-region: no-drag;
+}

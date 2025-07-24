@@ -1,13 +1,18 @@
 {
-  "watch": ["src/**/*.ts"],
+  "watch": ["src/**/*.ts", "src/shared/constants.ts"],
   "ext": "ts",
   "ignore": ["dist/**/*", "node_modules/**/*", "release/**/*", "renderer/**/*"],
-  "exec": "npm run build && NODE_ENV=development electron dist/main.js",
+  "exec": "echo '📁 Detected changes, regenerating CSS and rebuilding...' && npm run build && NODE_ENV=development electron dist/main.js",
   "env": {
     "NODE_ENV": "development"
   },
-  "delay": 1500,
+  "delay": 1000,
   "restartable": "rs",
   "verbose": true,
-  "legacyWatch": true
+  "legacyWatch": false,
+  "events": {
+    "restart": "echo '🔄 Restarting due to changes...'",
+    "crash": "echo '💥 App crashed - waiting for changes...'",
+    "start": "echo '🚀 Starting development server...'"
+  }
 } 

@@ -4,7 +4,8 @@
   "description": "A Mac app to help elderly and visually impaired users locate their cursor",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc && cp renderer/*.html dist/",
+    "generate-css": "node scripts/generate-css.js",
+    "build": "npm run generate-css && tsc && cp renderer/*.html dist/ && cp -r renderer/shared dist/",
     "start": "npm run build && electron dist/main.js",
     "dev": "nodemon",
     "dist": "npm run build && electron-builder",
