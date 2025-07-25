@@ -2,11 +2,11 @@
   "name": "eno-cursor",
   "version": "0.1.0",
   "description": "A Mac app to help elderly and visually impaired users locate their cursor",
-  "main": "dist/main.js",
+  "main": "dist/main/main.js",
   "scripts": {
     "generate-css": "node scripts/generate-css.js",
-    "build": "npm run generate-css && tsc && cp renderer/*.html dist/ && cp -r renderer/shared dist/",
-    "start": "npm run build && electron dist/main.js",
+    "build": "npm run generate-css && tsc && cp src/renderer/*/*.html dist/renderer/ && cp src/renderer/overlay/*.css dist/renderer/overlay/ && cp src/renderer/settings/*.css dist/renderer/settings/ && cp -r src/renderer/shared dist/renderer/",
+    "start": "npm run build && electron dist/main/main.js",
     "dev": "nodemon",
     "dist": "npm run build && electron-builder",
     "sign-app": "codesign --force --deep --sign - \"release/mac/Eno Cursor.app\" && codesign --force --deep --sign - \"release/mac-arm64/Eno Cursor.app\"",
@@ -41,7 +41,6 @@
     },
     "files": [
       "dist/**/*",
-      "renderer/**/*",
       "!dist/*.dmg",
       "!dist/*.zip",
       "!dist/mac*/**",

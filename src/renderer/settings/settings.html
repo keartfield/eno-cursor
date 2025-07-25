@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Eno Cursor</title>
+    <link rel="stylesheet" href="settings/settings.css">
+    <link rel="stylesheet" href="shared/constants/constants.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Preferences</h1>
+        </div>
+
+        <div class="content">
+
+            <!-- Inner Circle Section -->
+            <div class="section">
+                <div class="section-title">Inner Circle</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Size</div>
+                        <div class="control-value">
+                            <input type="number" id="innerSizeInput" class="number-input" value="200" min="50" max="1000" step="10">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label">Color</div>
+                        <div class="color-picker-wrapper">
+                            <div id="innerColorPreview" class="color-preview" style="background-color: var(--default-inner-color);"></div>
+                            <input type="color" id="innerColorInput" class="color-input" value="#d0723b">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outer Circle Section -->
+            <div class="section">
+                <div class="section-title">Outer Circle</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Size</div>
+                        <div class="control-value">
+                            <input type="number" id="outerSizeInput" class="number-input" value="1000" min="100" max="1200" step="10">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label">Color</div>
+                        <div class="color-picker-wrapper">
+                            <div id="outerColorPreview" class="color-preview" style="background-color: var(--default-outer-color);"></div>
+                            <input type="color" id="outerColorInput" class="color-input" value="#e74b4b">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Auto Start Section -->
+            <div class="section">
+                <div class="section-title">Startup</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">
+                          Auto Start
+                          <span class="toggle-description">Launch automatically when you log in</span>
+                        </div>
+                        <div class="control-value">
+
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoStartToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset Section -->
+            <div class="section">
+                <div class="section-title">Reset</div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <div class="control-label">Default Settings</div>
+                        <div class="control-value">
+                            <button id="resetButton" class="reset-button">Reset to Default</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="shared/constants/constants.js"></script>
+    <script src="settings/settings.js"></script>
+</body>
+</html>

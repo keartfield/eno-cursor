@@ -1,7 +1,7 @@
 import { app, BrowserWindow, screen, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ConfigLoader } from './config-loader';
+import { ConfigLoader } from './config-loader/config-loader';
 import { DEFAULT_VALUES, WINDOW_SETTINGS } from './shared/constants';
 
 // Hot reload for development
@@ -373,6 +373,11 @@ function createOverlayWindows(): void {
 
     overlayWindow.loadFile(path.join(__dirname, '../renderer/overlay.html'));
     overlayWindow.setIgnoreMouseEvents(true, { forward: true });
+    
+    // Open DevTools in development mode for first overlay only
+    if (process.env.NODE_ENV === 'development' && index === 0) {
+      overlayWindow.webContents.openDevTools({ mode: 'detach' });
+    }
     
     // Set window level to appear above fullscreen apps
     if (process.platform === 'darwin') {

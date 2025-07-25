@@ -3,7 +3,7 @@ const path = require('path');
 
 // TypeScriptの定数ファイルを読み込む（簡易パーサー）
 function extractConstants() {
-  const constantsPath = path.join(__dirname, '../src/shared/constants.ts');
+  const constantsPath = path.join(__dirname, '../src/main/shared/constants.ts');
   const content = fs.readFileSync(constantsPath, 'utf8');
   
   // 簡易的な定数抽出（本格的にはTypeScript ASTパーサーを使用）  
@@ -103,7 +103,7 @@ function main() {
     const css = generateCSS(constants);
     
     // 出力ディレクトリを作成
-    const outputDir = path.join(__dirname, '../renderer/shared');
+    const outputDir = path.join(__dirname, '../src/renderer/shared/constants');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }

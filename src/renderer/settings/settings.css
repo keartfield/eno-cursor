@@ -6,17 +6,17 @@
 body {
     margin: 0;
     padding: 0;
-    background: var(--color-background, #232233);
-    color: var(--color-text-primary, #fff);
+    background: var(--color-background);
+    color: var(--color-text-primary);
     user-select: none;
     font-size: 14px;
     line-height: 1.5;
 }
 
 .container {
-    width: 480px;
-    height: 640px;
-    background: var(--color-background, #232233);
+    width: var(--window-settings-width);
+    height: var(--window-settings-height);
+    background: var(--color-background);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
@@ -24,8 +24,8 @@ body {
 }
 
 .header {
-    background: var(--color-surface, #333343);
-    border-bottom: 1px solid var(--color-border, rgba(139, 138, 160, 0.1));
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
     padding: 44px 24px 20px 24px;
     -webkit-app-region: drag;
     position: sticky;
@@ -38,14 +38,14 @@ body {
     margin: 0;
     font-size: 24px;
     font-weight: 600;
-    color: var(--color-text-primary, #fff);
+    color: var(--color-text-primary);
     letter-spacing: -0.02em;
 }
 
 .header p {
     margin: 8px 0 0 0;
     font-size: 13px;
-    color: var(--color-text-secondary, #8b8aa0);
+    color: var(--color-text-secondary);
     font-weight: 400;
 }
 
@@ -66,17 +66,17 @@ body {
 .section-title {
     font-size: 16px;
     font-weight: 600;
-    color: var(--color-text-primary, #fff);
+    color: var(--color-text-primary);
     margin: 0 0 16px 0;
     letter-spacing: -0.01em;
 }
 
 .control-group {
-    background: var(--color-surface, #333343);
+    background: var(--color-surface);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 12px;
-    border: 1px solid var(--color-border, rgba(139, 138, 160, 0.1));
+    border: 1px solid var(--color-border);
 }
 
 .control-row {
@@ -93,7 +93,7 @@ body {
 .control-label {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-text-primary, #fff);
+    color: var(--color-text-primary);
     min-width: 120px;
 }
 
@@ -104,10 +104,10 @@ body {
 }
 
 .number-input {
-    background: var(--color-background, #232233);
+    background: var(--color-background);
     border-radius: 6px;
     border: none;
-    color: var(--color-text-primary, #fff);
+    color: var(--color-text-primary);
     padding: 8px 12px;
     font-size: 14px;
     width: 80px;
@@ -122,7 +122,7 @@ body {
 
 .unit {
     font-size: 12px;
-    color: var(--color-text-secondary, #8b8aa0);
+    color: var(--color-text-secondary);
     font-weight: 500;
 }
 
@@ -142,7 +142,7 @@ body {
 }
 
 .color-preview:hover {
-    border-color: var(--color-text-primary, #fff);
+    border-color: var(--color-text-primary);
 }
 
 .color-input {
@@ -152,7 +152,7 @@ body {
 }
 
 .reset-button {
-    background: var(--color-primary, #8f89fa);
+    background: var(--color-primary);
     border-radius: 6px;
     color: white;
     padding: 8px 16px;
@@ -186,10 +186,10 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--color-background, #232233);
+    background-color: var(--color-background);
     transition: 0.3s;
     border-radius: 24px;
-    border: 1px solid var(--color-border, rgba(139, 138, 160, 0.3));
+    border: 1px solid rgba(139, 138, 160, 0.3);
 }
 
 .slider:before {
@@ -199,24 +199,24 @@ body {
     width: 18px;
     left: 2px;
     bottom: 2px;
-    background-color: var(--color-text-secondary, #8b8aa0);
+    background-color: var(--color-text-secondary);
     transition: 0.3s;
     border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: var(--color-primary, #8f89fa);
-    border-color: var(--color-primary, #8f89fa);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 input:checked + .slider:before {
     transform: translateX(21px);
-    background-color: var(--color-text-primary, #fff);
+    background-color: var(--color-text-primary);
 }
 
 .toggle-description {
     font-size: 12px;
-    color: var(--color-text-secondary, #8b8aa0);
+    color: var(--color-text-secondary);
     display: block;
     margin-top: 4px;
 }

@@ -1,12 +1,43 @@
-const innerCircle = document.getElementById('innerCircle') as HTMLDivElement;
-const outerCircle = document.getElementById('outerCircle') as HTMLDivElement;
+let innerCircle: HTMLDivElement;
+let outerCircle: HTMLDivElement;
 
 let mouseX = 0;
 let mouseY = 0;
 let innerSize: number; // Will be updated from main process constants injection
 let outerSize: number; // Will be updated from main process constants injection
+let innerColor: string; // Will be updated from main process
+let outerColor: string; // Will be updated from main process
 let myDisplayIndex = -1;
 let currentDisplayIndex = -1;
+let isInitialized = false;
+
+// Queue to store settings updates before DOM is ready
+let pendingSettingsUpdate: any = null;
+
+// Initialize DOM elements when document is ready
+function initializeOverlay() {
+    innerCircle = document.getElementById('innerCircle') as HTMLDivElement;
+    outerCircle = document.getElementById('outerCircle') as HTMLDivElement;
+    
+    if (!innerCircle || !outerCircle) {
+        console.error('Could not find circle elements');
+        return;
+    }
+    
+    // Initialize circles as hidden
+    innerCircle.style.display = 'none';
+    outerCircle.style.display = 'none';
+    
+    isInitialized = true;
+    console.log('Overlay DOM elements initialized');
+    
+    // Apply any pending settings updates
+    if (pendingSettingsUpdate) {
+        console.log('Applying pending settings update:', pendingSettingsUpdate);
+        applySettingsUpdate(pendingSettingsUpdate);
+        pendingSettingsUpdate = null;
+    }
+}
 
 // Listen for display index from main process
 const { ipcRenderer: overlayIpcRenderer } = require('electron');
@@ -63,6 +94,18 @@ function updateCursorPosition(x: number, y: number, displayIndex: number = -1) {
 }
 
 function positionCircles(x: number, y: number) {
+    // Check if DOM elements are initialized
+    if (!innerCircle || !outerCircle) {
+        console.warn('Circle elements not initialized yet');
+        return;
+    }
+    
+    // Check if sizes are initialized
+    if (!innerSize || !outerSize) {
+        console.warn('Circle sizes not initialized yet');
+        return;
+    }
+    
     // Size-dependent compensation calculation (from refactored position service)
     const outerSizeRatio = Math.min(outerSize / 600, 1);
     const outerOffsetX = 5 * (1 - outerSizeRatio);
@@ -151,8 +194,6 @@ function trackGlobalCursor() {
     updatePosition();
 }
 
-trackGlobalCursor();
-
 // Listen for size updates from main process
 overlayIpcRenderer.on('circle-sizes-updated', (event: any, sizes: { inner: number; outer: number }) => {
     innerSize = sizes.inner;
@@ -161,15 +202,17 @@ overlayIpcRenderer.on('circle-sizes-updated', (event: any, sizes: { inner: numbe
     updateCircleSizes();
 });
 
-// Listen for settings updates (including colors) from main process
-overlayIpcRenderer.on('circle-settings-updated', (event: any, settings: { inner: number; outer: number; innerColor: string; outerColor: string }) => {
-    console.log('=== OVERLAY: Received circle-settings-updated ===');
+// Common function to apply settings updates
+function applySettingsUpdate(settings: { inner: number; outer: number; innerColor: string; outerColor: string }) {
+    console.log('=== OVERLAY: Applying settings update ===');
     console.log('Settings received:', settings);
     console.log('Previous innerSize:', innerSize);
     console.log('Previous outerSize:', outerSize);
     
     innerSize = settings.inner;
     outerSize = settings.outer;
+    innerColor = settings.innerColor;
+    outerColor = settings.outerColor;
     
     console.log('New innerSize:', innerSize);
     console.log('New outerSize:', outerSize);
@@ -187,9 +230,29 @@ overlayIpcRenderer.on('circle-settings-updated', (event: any, settings: { inner:
     console.log('Calling updateCircleSizes()');
     updateCircleSizes();
     console.log('=== END OVERLAY UPDATE ===');
+}
+
+// Listen for settings updates (including colors) from main process
+overlayIpcRenderer.on('circle-settings-updated', (event: any, settings: { inner: number; outer: number; innerColor: string; outerColor: string }) => {
+    console.log('=== OVERLAY: Received circle-settings-updated ===');
+    console.log('isInitialized:', isInitialized);
+    
+    if (!isInitialized) {
+        console.log('DOM not ready, storing settings update for later');
+        pendingSettingsUpdate = settings;
+        return;
+    }
+    
+    applySettingsUpdate(settings);
 });
 
 function updateCircleColor(type: 'inner' | 'outer', color: string) {
+    // Check if DOM elements are initialized
+    if (!innerCircle || !outerCircle) {
+        console.warn('Circle elements not initialized yet for color update');
+        return;
+    }
+    
     const rgba = hexToRgba(color, 0.6);
     
     if (type === 'inner') {
@@ -207,6 +270,17 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 
-// Initialize circles as hidden
-innerCircle.style.display = 'none';
-outerCircle.style.display = 'none';
+// Initialize overlay when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeOverlay();
+    trackGlobalCursor();
+});
+
+// Fallback initialization for when DOMContentLoaded has already fired
+if (document.readyState === 'loading') {
+    // Document still loading, wait for DOMContentLoaded
+} else {
+    // Document already loaded
+    initializeOverlay();
+    trackGlobalCursor();
+}

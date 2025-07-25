@@ -1,4 +1,4 @@
-import { DEFAULT_VALUES, UI_COLORS, CIRCLE_SETTINGS } from './constants';
+import { DEFAULT_VALUES, UI_COLORS, CIRCLE_SETTINGS } from '../constants/constants';
 
 export function setCSSVariables() {
   const root = document.documentElement;

@@ -1,8 +1,8 @@
 {
-  "watch": ["src/**/*.ts", "src/shared/constants.ts"],
+  "watch": ["src/**/*.ts"],
   "ext": "ts",
-  "ignore": ["dist/**/*", "node_modules/**/*", "release/**/*", "renderer/**/*"],
-  "exec": "echo '📁 Detected changes, regenerating CSS and rebuilding...' && npm run build && NODE_ENV=development electron dist/main.js",
+  "ignore": ["dist/**/*", "node_modules/**/*", "release/**/*"],
+  "exec": "echo '📁 Detected changes, regenerating CSS and rebuilding...' && npm run build && NODE_ENV=development electron dist/main/main.js",
   "env": {
     "NODE_ENV": "development"
   },
