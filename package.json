@@ -8,6 +8,7 @@
     "build": "npm run generate-css && tsc && cp src/renderer/*/*.html dist/renderer/ && cp src/renderer/overlay/*.css dist/renderer/overlay/ && cp src/renderer/settings/*.css dist/renderer/settings/ && cp -r src/renderer/shared dist/renderer/",
     "start": "npm run build && electron dist/main/main.js",
     "dev": "nodemon",
+    "test": "vitest run --environment jsdom",
     "dist": "npm run build && electron-builder",
     "sign-app": "codesign --force --deep --sign - \"release/mac/Eno Cursor.app\" && codesign --force --deep --sign - \"release/mac-arm64/Eno Cursor.app\"",
     "release": "npm run build && electron-builder --publish=always"
@@ -22,17 +23,21 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20.0.0",
     "chokidar": "^4.0.3",
     "concurrently": "^9.2.0",
     "electron": "^25.0.0",
     "electron-builder": "^24.13.3",
     "electron-reload": "^2.0.0-alpha.1",
+    "jsdom": "^26.1.0",
+    "node-html-parser": "^7.0.1",
     "nodemon": "^3.1.10",
     "typescript": "^5.0.0",
+    "vitest": "^3.2.4",
     "wait-on": "^8.0.3"
   },
-  "dependencies": {},
   "build": {
     "appId": "com.eno-cursor.app",
     "productName": "Eno Cursor",
@@ -56,11 +61,15 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["universal"]
+          "arch": [
+            "universal"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["universal"]
+          "arch": [
+            "universal"
+          ]
         }
       ]
     }
