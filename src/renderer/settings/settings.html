@@ -19,19 +19,26 @@
                 <div class="section-title">Inner Circle</div>
                 <div class="control-group">
                     <div class="control-row">
-                        <div class="control-label">Size</div>
+                        <div class="control-label">Circle Size</div>
                         <div class="control-value">
                             <input type="number" id="innerSizeInput" class="number-input" value="200" min="50" max="1000" step="10">
                             <span class="unit">px</span>
                         </div>
                     </div>
                     <div class="control-row">
-                        <div class="control-label">Color</div>
-                        <div class="color-picker-wrapper">
-                            <div id="innerColorPreview" class="color-preview" style="background-color: var(--default-inner-color);"></div>
-                            <input type="color" id="innerColorInput" class="color-input" value="#d0723b">
+                        <div class="control-label">Border Width</div>
+                        <div class="control-value">
+                            <input type="number" id="innerBorderWidthInput" class="number-input" value="16" min="1" max="100" step="1">
+                            <span class="unit">px</span>
                         </div>
                     </div>
+                    <div class="control-row">
+                      <div class="control-label">Color</div>
+                      <div class="color-picker-wrapper">
+                          <div id="innerColorPreview" class="color-preview" style="background-color: var(--default-inner-color);"></div>
+                          <input type="color" id="innerColorInput" class="color-input" value="#d0723b">
+                      </div>
+                  </div>
                 </div>
             </div>
 
@@ -40,19 +47,26 @@
                 <div class="section-title">Outer Circle</div>
                 <div class="control-group">
                     <div class="control-row">
-                        <div class="control-label">Size</div>
+                        <div class="control-label">CircleSize</div>
                         <div class="control-value">
                             <input type="number" id="outerSizeInput" class="number-input" value="1000" min="100" max="1200" step="10">
                             <span class="unit">px</span>
                         </div>
                     </div>
                     <div class="control-row">
-                        <div class="control-label">Color</div>
-                        <div class="color-picker-wrapper">
-                            <div id="outerColorPreview" class="color-preview" style="background-color: var(--default-outer-color);"></div>
-                            <input type="color" id="outerColorInput" class="color-input" value="#e74b4b">
+                        <div class="control-label">Border Width</div>
+                        <div class="control-value">
+                            <input type="number" id="outerBorderWidthInput" class="number-input" value="60" min="1" max="100" step="1">
+                            <span class="unit">px</span>
                         </div>
                     </div>
+                    <div class="control-row">
+                      <div class="control-label">Color</div>
+                      <div class="color-picker-wrapper">
+                          <div id="outerColorPreview" class="color-preview" style="background-color: var(--default-outer-color);"></div>
+                          <input type="color" id="outerColorInput" class="color-input" value="#e74b4b">
+                      </div>
+                  </div>
                 </div>
             </div>
             

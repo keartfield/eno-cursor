@@ -2,7 +2,7 @@ import { app, BrowserWindow, screen, ipcMain, Tray, Menu, nativeImage } from 'el
 import * as path from 'path';
 import * as fs from 'fs';
 import { ConfigLoader } from './config-loader/config-loader';
-import { DEFAULT_VALUES, WINDOW_SETTINGS } from './shared/constants';
+import { DEFAULT_VALUES, WINDOW_SETTINGS, CIRCLE_SETTINGS } from './shared/constants';
 
 // Hot reload for development
 if (process.env.NODE_ENV === 'development') {
@@ -32,6 +32,8 @@ let innerSize: number = DEFAULT_VALUES.INNER_SIZE;
 let outerSize: number = DEFAULT_VALUES.OUTER_SIZE;  
 let innerColor: string = DEFAULT_VALUES.INNER_COLOR;
 let outerColor: string = DEFAULT_VALUES.OUTER_COLOR;
+let innerBorderWidth: number = CIRCLE_SETTINGS.BORDER_WIDTH_INNER;
+let outerBorderWidth: number = CIRCLE_SETTINGS.BORDER_WIDTH_OUTER;
 let autoStart = false;
 let settingsWindow: BrowserWindow | null = null;
 
@@ -39,8 +41,8 @@ const settingsPath = path.join(app.getPath('userData'), 'eno-cursor-settings.jso
 console.log('Settings path:', settingsPath);
 
 interface Settings {
-  inner: { size: number; color: string };
-  outer: { size: number; color: string };
+  inner: { size: number; color: string; borderWidth?: number };
+  outer: { size: number; color: string; borderWidth?: number };
   running: boolean;
   autoStart: boolean;
 }
@@ -54,6 +56,8 @@ function loadSettings(): void {
     outerSize = settings.outer.size;
     innerColor = settings.inner.color;
     outerColor = settings.outer.color;
+    innerBorderWidth = settings.inner.borderWidth || CIRCLE_SETTINGS.BORDER_WIDTH_INNER;
+    outerBorderWidth = settings.outer.borderWidth || CIRCLE_SETTINGS.BORDER_WIDTH_OUTER;
     autoStart = settings.autoStart || false;
     // Always start with isRunning = false on app startup
     isRunning = false;
@@ -75,8 +79,8 @@ function loadSettings(): void {
 function saveSettings(): void {
   try {
     const settings: Settings = {
-      inner: { size: innerSize, color: innerColor },
-      outer: { size: outerSize, color: outerColor },
+      inner: { size: innerSize, color: innerColor, borderWidth: innerBorderWidth },
+      outer: { size: outerSize, color: outerColor, borderWidth: outerBorderWidth },
       running: isRunning,
       autoStart: autoStart
     };
@@ -548,8 +552,8 @@ ipcMain.handle('get-display-bounds', (event, displayIndex) => {
 
 ipcMain.handle('get-current-settings', () => {
   return {
-    inner: { size: innerSize, color: innerColor },
-    outer: { size: outerSize, color: outerColor },
+    inner: { size: innerSize, color: innerColor, borderWidth: innerBorderWidth },
+    outer: { size: outerSize, color: outerColor, borderWidth: outerBorderWidth },
     running: isRunning,
     autoStart: autoStart
   };
@@ -570,19 +574,27 @@ ipcMain.on('update-circle-settings', (event, settings) => {
   if (settings.inner) {
     innerSize = settings.inner.size;
     innerColor = settings.inner.color;
-    console.log('Updated inner settings:', { size: innerSize, color: innerColor });
+    if (settings.inner.borderWidth !== undefined) {
+      innerBorderWidth = settings.inner.borderWidth;
+    }
+    console.log('Updated inner settings:', { size: innerSize, color: innerColor, borderWidth: innerBorderWidth });
   }
   if (settings.outer) {
     outerSize = settings.outer.size;
     outerColor = settings.outer.color;
-    console.log('Updated outer settings:', { size: outerSize, color: outerColor });
+    if (settings.outer.borderWidth !== undefined) {
+      outerBorderWidth = settings.outer.borderWidth;
+    }
+    console.log('Updated outer settings:', { size: outerSize, color: outerColor, borderWidth: outerBorderWidth });
   }
   
   const updateData = {
     inner: innerSize,
     outer: outerSize,
     innerColor: innerColor,
-    outerColor: outerColor
+    outerColor: outerColor,
+    innerBorderWidth: innerBorderWidth,
+    outerBorderWidth: outerBorderWidth
   };
   
   console.log('Sending circle-settings-updated to overlay windows:', updateData);
@@ -630,13 +642,17 @@ ipcMain.on('reset-to-defaults', () => {
   outerSize = DEFAULT_VALUES.OUTER_SIZE;
   innerColor = DEFAULT_VALUES.INNER_COLOR;
   outerColor = DEFAULT_VALUES.OUTER_COLOR;
+  innerBorderWidth = CIRCLE_SETTINGS.BORDER_WIDTH_INNER;
+  outerBorderWidth = CIRCLE_SETTINGS.BORDER_WIDTH_OUTER;
   setAutoStart(false); // Reset auto-start to disabled
   
   const defaultSettings = {
     inner: innerSize,
     outer: outerSize,
     innerColor: innerColor,
-    outerColor: outerColor
+    outerColor: outerColor,
+    innerBorderWidth: innerBorderWidth,
+    outerBorderWidth: outerBorderWidth
   };
   
   // Update all overlay windows
@@ -649,8 +665,8 @@ ipcMain.on('reset-to-defaults', () => {
   // Update settings window if open
   if (settingsWindow && !settingsWindow.isDestroyed()) {
     settingsWindow.webContents.send('settings-reset', {
-      inner: { size: innerSize, color: innerColor },
-      outer: { size: outerSize, color: outerColor },
+      inner: { size: innerSize, color: innerColor, borderWidth: innerBorderWidth },
+      outer: { size: outerSize, color: outerColor, borderWidth: outerBorderWidth },
       running: isRunning,
       autoStart: autoStart
     });

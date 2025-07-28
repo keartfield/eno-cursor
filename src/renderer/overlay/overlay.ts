@@ -203,7 +203,7 @@ overlayIpcRenderer.on('circle-sizes-updated', (event: any, sizes: { inner: numbe
 });
 
 // Common function to apply settings updates
-function applySettingsUpdate(settings: { inner: number; outer: number; innerColor: string; outerColor: string }) {
+function applySettingsUpdate(settings: { inner: number; outer: number; innerColor: string; outerColor: string; innerBorderWidth?: number; outerBorderWidth?: number }) {
     console.log('=== OVERLAY: Applying settings update ===');
     console.log('Settings received:', settings);
     console.log('Previous innerSize:', innerSize);
@@ -225,6 +225,16 @@ function applySettingsUpdate(settings: { inner: number; outer: number; innerColo
     if (settings.outerColor) {
         updateCircleColor('outer', settings.outerColor);
         console.log('Updated outer color to:', settings.outerColor);
+    }
+    
+    if (settings.innerBorderWidth !== undefined) {
+        updateCircleBorderWidth('inner', settings.innerBorderWidth);
+        console.log('Updated inner border width to:', settings.innerBorderWidth);
+    }
+    
+    if (settings.outerBorderWidth !== undefined) {
+        updateCircleBorderWidth('outer', settings.outerBorderWidth);
+        console.log('Updated outer border width to:', settings.outerBorderWidth);
     }
     
     console.log('Calling updateCircleSizes()');
@@ -259,6 +269,20 @@ function updateCircleColor(type: 'inner' | 'outer', color: string) {
         innerCircle.style.borderColor = rgba;
     } else if (type === 'outer') {
         outerCircle.style.borderColor = rgba;
+    }
+}
+
+function updateCircleBorderWidth(type: 'inner' | 'outer', width: number) {
+    // Check if DOM elements are initialized
+    if (!innerCircle || !outerCircle) {
+        console.warn('Circle elements not initialized yet for border width update');
+        return;
+    }
+    
+    if (type === 'inner') {
+        innerCircle.style.borderWidth = `${width}px`;
+    } else if (type === 'outer') {
+        outerCircle.style.borderWidth = `${width}px`;
     }
 }
 

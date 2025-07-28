@@ -14,6 +14,8 @@ let configInnerSize: number;
 let configOuterSize: number;
 let configInnerColor: string;
 let configOuterColor: string;
+let configInnerBorderWidth: number;
+let configOuterBorderWidth: number;
 let configIsRunning = false;
 let configAutoStart = false;
 
@@ -24,6 +26,8 @@ let innerColorPreview: HTMLDivElement;
 let outerColorPreview: HTMLDivElement;
 let innerColorInput: HTMLInputElement;
 let outerColorInput: HTMLInputElement;
+let innerBorderWidthInput: HTMLInputElement;
+let outerBorderWidthInput: HTMLInputElement;
 let resetButton: HTMLButtonElement;
 let autoStartToggle: HTMLInputElement;
 
@@ -34,6 +38,8 @@ function initializeDOMElements() {
     outerColorPreview = document.getElementById('outerColorPreview') as HTMLDivElement;
     innerColorInput = document.getElementById('innerColorInput') as HTMLInputElement;
     outerColorInput = document.getElementById('outerColorInput') as HTMLInputElement;
+    innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement;
+    outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement;
     resetButton = document.getElementById('resetButton') as HTMLButtonElement;
     autoStartToggle = document.getElementById('autoStartToggle') as HTMLInputElement;
     
@@ -78,6 +84,20 @@ function initializeDOMElements() {
         const enabled = (e.target as HTMLInputElement).checked;
         configAutoStart = enabled;
         configIpcRenderer.send('set-auto-start', enabled);
+    });
+
+    innerBorderWidthInput.addEventListener('input', (e) => {
+        const width = parseInt((e.target as HTMLInputElement).value);
+        if (width >= (constants.CIRCLE_SETTINGS?.MIN_BORDER_WIDTH || 1) && width <= (constants.CIRCLE_SETTINGS?.MAX_BORDER_WIDTH || 100)) {
+            updateInnerBorderWidth(width);
+        }
+    });
+
+    outerBorderWidthInput.addEventListener('input', (e) => {
+        const width = parseInt((e.target as HTMLInputElement).value);
+        if (width >= (constants.CIRCLE_SETTINGS?.MIN_BORDER_WIDTH || 1) && width <= (constants.CIRCLE_SETTINGS?.MAX_BORDER_WIDTH || 100)) {
+            updateOuterBorderWidth(width);
+        }
     });
 }
 
@@ -130,6 +150,24 @@ function updateOuterColor(color: string) {
     sendSettingsUpdate();
 }
 
+function updateInnerBorderWidth(width: number) {
+    console.log('updateInnerBorderWidth called with:', width);
+    configInnerBorderWidth = width;
+    if (innerBorderWidthInput) {
+        innerBorderWidthInput.value = width.toString();
+    }
+    sendSettingsUpdate();
+}
+
+function updateOuterBorderWidth(width: number) {
+    console.log('updateOuterBorderWidth called with:', width);
+    configOuterBorderWidth = width;
+    if (outerBorderWidthInput) {
+        outerBorderWidthInput.value = width.toString();
+    }
+    sendSettingsUpdate();
+}
+
 function updatePresetButtons(target: string, value: number) {
     const buttons = document.querySelectorAll(`[data-target="${target}"]`) as NodeListOf<HTMLButtonElement>;
     buttons.forEach(button => {
@@ -143,8 +181,8 @@ function updatePresetButtons(target: string, value: number) {
 
 function sendSettingsUpdate() {
     const settings = {
-        inner: { size: configInnerSize, color: configInnerColor },
-        outer: { size: configOuterSize, color: configOuterColor }
+        inner: { size: configInnerSize, color: configInnerColor, borderWidth: configInnerBorderWidth },
+        outer: { size: configOuterSize, color: configOuterColor, borderWidth: configOuterBorderWidth }
     };
     console.log('=== CONFIG: Sending settings update ===');
     console.log('Settings object:', settings);
@@ -152,6 +190,8 @@ function sendSettingsUpdate() {
     console.log('Current outerSize:', configOuterSize);
     console.log('Current innerColor:', configInnerColor);
     console.log('Current outerColor:', configOuterColor);
+    console.log('Current innerBorderWidth:', configInnerBorderWidth);
+    console.log('Current outerBorderWidth:', configOuterBorderWidth);
     console.log('=====================================');
     configIpcRenderer.send('update-circle-settings', settings);
 }
@@ -164,6 +204,8 @@ function resetToDefaults() {
     updateOuterSize(DEFAULT_OUTER_SIZE);
     updateInnerColor(DEFAULT_INNER_COLOR);
     updateOuterColor(DEFAULT_OUTER_COLOR);
+    updateInnerBorderWidth(constants.CIRCLE_SETTINGS?.BORDER_WIDTH_INNER || 16);
+    updateOuterBorderWidth(constants.CIRCLE_SETTINGS?.BORDER_WIDTH_OUTER || 60);
     
     // Send reset command to main process
     configIpcRenderer.send('reset-to-defaults');
@@ -206,11 +248,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (settings.inner.color) {
                 updateInnerColor(settings.inner.color);
             }
+            if (settings.inner.borderWidth) {
+                updateInnerBorderWidth(settings.inner.borderWidth);
+            } else {
+                updateInnerBorderWidth(constants.CIRCLE_SETTINGS?.BORDER_WIDTH_INNER || 16);
+            }
         }
         if (settings.outer) {
             updateOuterSize(settings.outer.size || settings.outer);
             if (settings.outer.color) {
                 updateOuterColor(settings.outer.color);
+            }
+            if (settings.outer.borderWidth) {
+                updateOuterBorderWidth(settings.outer.borderWidth);
+            } else {
+                updateOuterBorderWidth(constants.CIRCLE_SETTINGS?.BORDER_WIDTH_OUTER || 60);
             }
         }
         
@@ -229,6 +281,8 @@ configIpcRenderer.on('settings-reset', (event: any, settings: any) => {
     configOuterSize = settings.outer.size;
     configInnerColor = settings.inner.color;
     configOuterColor = settings.outer.color;
+    configInnerBorderWidth = settings.inner.borderWidth || constants.CIRCLE_SETTINGS?.BORDER_WIDTH_INNER || 16;
+    configOuterBorderWidth = settings.outer.borderWidth || constants.CIRCLE_SETTINGS?.BORDER_WIDTH_OUTER || 60;
     configAutoStart = settings.autoStart || false;
     
     // Update inputs directly
@@ -236,6 +290,8 @@ configIpcRenderer.on('settings-reset', (event: any, settings: any) => {
     outerSizeInput.value = configOuterSize.toString();
     innerColorInput.value = configInnerColor;
     outerColorInput.value = configOuterColor;
+    innerBorderWidthInput.value = configInnerBorderWidth.toString();
+    outerBorderWidthInput.value = configOuterBorderWidth.toString();
     innerColorPreview.style.backgroundColor = configInnerColor;
     outerColorPreview.style.backgroundColor = configOuterColor;
     autoStartToggle.checked = configAutoStart;

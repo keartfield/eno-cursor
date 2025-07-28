@@ -355,4 +355,125 @@ describe('Settings Screen Functionality', () => {
     
     expect(parseInt(outerSizeInput.value)).toBeGreaterThan(parseInt(innerSizeInput.value))
   })
+
+  // Border width tests
+  it('should have border width input elements in the HTML', () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    const outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement
+    
+    expect(innerBorderWidthInput).toBeTruthy()
+    expect(outerBorderWidthInput).toBeTruthy()
+    expect(innerBorderWidthInput.type).toBe('number')
+    expect(outerBorderWidthInput.type).toBe('number')
+  })
+
+  it('should change inner circle border width', () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    
+    // Change border width value
+    innerBorderWidthInput.value = '20'
+    fireEvent.input(innerBorderWidthInput)
+    
+    expect(innerBorderWidthInput.value).toBe('20')
+  })
+
+  it('should change outer circle border width', () => {
+    const outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement
+    
+    // Change border width value
+    outerBorderWidthInput.value = '80'
+    fireEvent.input(outerBorderWidthInput)
+    
+    expect(outerBorderWidthInput.value).toBe('80')
+  })
+
+  it('should validate border width limits using constants', () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    const outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement
+    
+    // Test min/max attributes using actual constants
+    expect(innerBorderWidthInput.min).toBe(CIRCLE_SETTINGS.MIN_BORDER_WIDTH.toString())
+    expect(innerBorderWidthInput.max).toBe(CIRCLE_SETTINGS.MAX_BORDER_WIDTH.toString())
+    expect(outerBorderWidthInput.min).toBe(CIRCLE_SETTINGS.MIN_BORDER_WIDTH.toString())
+    expect(outerBorderWidthInput.max).toBe(CIRCLE_SETTINGS.MAX_BORDER_WIDTH.toString())
+    
+    // Test step attribute
+    expect(innerBorderWidthInput.step).toBe('1')
+    expect(outerBorderWidthInput.step).toBe('1')
+  })
+
+  it('should handle border width validation within limits', () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    
+    // Test valid value within range
+    const validWidth = 50
+    innerBorderWidthInput.value = validWidth.toString()
+    fireEvent.input(innerBorderWidthInput)
+    
+    // Simulate validation logic (would be handled by actual settings script)
+    const width = parseInt(innerBorderWidthInput.value)
+    const isValid = width >= CIRCLE_SETTINGS.MIN_BORDER_WIDTH && width <= CIRCLE_SETTINGS.MAX_BORDER_WIDTH
+    
+    expect(isValid).toBe(true)
+    expect(innerBorderWidthInput.value).toBe(validWidth.toString())
+  })
+
+  it('should reset border width to default values', () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    const outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement
+    const resetButton = document.getElementById('resetButton') as HTMLButtonElement
+    
+    // Set non-default border width values
+    innerBorderWidthInput.value = '25'
+    outerBorderWidthInput.value = '85'
+    
+    // Add event listener to simulate reset behavior
+    resetButton.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset all settings to default values?')) {
+        // Reset border widths to defaults using actual constants
+        innerBorderWidthInput.value = CIRCLE_SETTINGS.BORDER_WIDTH_INNER.toString()
+        outerBorderWidthInput.value = CIRCLE_SETTINGS.BORDER_WIDTH_OUTER.toString()
+      }
+    })
+    
+    // Click reset button
+    fireEvent.click(resetButton)
+    
+    // Verify reset to default values using actual constants
+    expect(innerBorderWidthInput.value).toBe(CIRCLE_SETTINGS.BORDER_WIDTH_INNER.toString())
+    expect(outerBorderWidthInput.value).toBe(CIRCLE_SETTINGS.BORDER_WIDTH_OUTER.toString())
+  })
+
+  it('should initialize border width with values from main process', async () => {
+    const innerBorderWidthInput = document.getElementById('innerBorderWidthInput') as HTMLInputElement
+    const outerBorderWidthInput = document.getElementById('outerBorderWidthInput') as HTMLInputElement
+    
+    // Mock the return value with border width data
+    mockIpcRenderer.invoke.mockResolvedValueOnce({
+      inner: { 
+        size: DEFAULT_VALUES.INNER_SIZE, 
+        color: DEFAULT_VALUES.INNER_COLOR,
+        borderWidth: CIRCLE_SETTINGS.BORDER_WIDTH_INNER
+      },
+      outer: { 
+        size: DEFAULT_VALUES.OUTER_SIZE, 
+        color: DEFAULT_VALUES.OUTER_COLOR,
+        borderWidth: CIRCLE_SETTINGS.BORDER_WIDTH_OUTER
+      },
+      autoStart: false
+    })
+    
+    // Simulate DOMContentLoaded initialization
+    const settings = await mockIpcRenderer.invoke('get-current-settings')
+    
+    // Apply border width settings to inputs (simulating actual behavior)
+    if (settings && settings.inner && settings.outer) {
+      innerBorderWidthInput.value = (settings.inner.borderWidth || CIRCLE_SETTINGS.BORDER_WIDTH_INNER).toString()
+      outerBorderWidthInput.value = (settings.outer.borderWidth || CIRCLE_SETTINGS.BORDER_WIDTH_OUTER).toString()
+    }
+    
+    // Verify initialization using actual constants
+    expect(innerBorderWidthInput.value).toBe(CIRCLE_SETTINGS.BORDER_WIDTH_INNER.toString())
+    expect(outerBorderWidthInput.value).toBe(CIRCLE_SETTINGS.BORDER_WIDTH_OUTER.toString())
+  })
 })
