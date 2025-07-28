@@ -1,6 +1,6 @@
 {
   "name": "eno-cursor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Mac app to help elderly and visually impaired users locate their cursor",
   "main": "dist/main/main.js",
   "scripts": {
