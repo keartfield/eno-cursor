@@ -10,35 +10,98 @@ A gentle Mac app that helps you find your cursor with beautiful, customizable ci
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/keartfield)
 
-## ✨ Features
+## Website
 
-- **Dual-circle design**: Inner and outer circles follow your cursor
-- **Customizable colors**: Choose your favorite colors for both circles
-- **Adjustable sizes**: Make the circles bigger or smaller to your preference
-- **Menu bar app**: Runs quietly in your menu bar
+https://keartfield.github.io/eno-cursor/
 
-## 🚀 Quick Start
+## Project Structure
 
-1. **Download** the latest release for macOS
-2. **Install** and launch the app
-3. **Click the menu bar icon** to start/stop the cursor overlay
-4. **Open settings** to customize colors and sizes
+```
+src/
+├── main/                   # Electron main process
+│   ├── config-loader/      # Configuration management
+│   ├── shared/             # Shared constants and utilities
+│   └── main.ts             # Main application entry point
+├── renderer/               # Renderer processes
+│   ├── overlay/            # Cursor overlay window
+│   ├── settings/           # Settings window
+│   └── shared/             # Shared UI utilities
+└── __tests__/              # Integration tests
 
-## 🗂️ Download
+scripts/                    # Build scripts
+tests/                      # Unit tests
+```
 
-### Latest Release (v0.1.0)
+## Tech Stack
 
-- [Eno Cursor 0.1.0.dmg](https://github.com/keartfield/eno-cursor/releases/download/v0.1.0/Eno.Cursor-0.1.0.dmg) (86.7 MB)
+- **Electron**: Desktop app framework
+- **TypeScript**: Type-safe JavaScript
+- **Vitest**: Testing framework
+- **electron-builder**: App packaging and distribution
 
+## Development Setup
 
-## 🧩 Customization
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/keartfield/eno-cursor.git
+   cd eno-cursor
+   ```
 
-- **Inner circle**: Default orange color, 650px size
-- **Outer circle**: Default red color, 1000px size
-- **Colors**: Use any hex color code
-- **Sizes**: Adjust from 100px to 2000px
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## ⚙️ System Requirements
+3. **Run in development mode**
+   ```bash
+   npm run dev
+   ```
 
-- macOS 10.14 or later
-- Intel or Apple Silicon Macs
+## Build Commands
+
+- `npm run build` - Build the application
+- `npm run start` - Build and run the app
+- `npm run dev` - Development mode with hot reload
+- `npm run test` - Run unit tests
+- `npm run dist` - Build distribution packages
+- `npm run release` - Build and publish release
+
+## Architecture
+
+The app consists of two main processes:
+
+- **Main Process** (`src/main/`): Manages application lifecycle, creates windows, handles system integration
+- **Renderer Processes**: 
+  - **Overlay** (`src/renderer/overlay/`): Transparent overlay that follows the cursor
+  - **Settings** (`src/renderer/settings/`): Configuration UI
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Run tests: `npm test`
+5. Build the app: `npm run build`
+6. Submit a pull request
+
+### Commit Message Conventions
+
+Please use the following prefixes for commit messages:
+
+```
+add: - New features or functionality
+fix: - Bug fixes
+mod: - Modifications to existing features
+refactor: - Code refactoring without functional changes
+test: - Adding or modifying tests
+docs: - Documentation changes
+build: - Build system changes
+website: - Documentation or website updates
+chore: - Maintenance tasks (dependencies, config, etc.)
+```
+
+## Testing
+
+- Unit tests: `npm test`
+- Integration tests are located in `src/__tests__/integration/`
+- Test files follow the pattern `*.test.ts`
